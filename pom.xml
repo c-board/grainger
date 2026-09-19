@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.4.5</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.grainger.pricing</groupId>
+  <artifactId>pricing-platform</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Grainger Pricing Platform</name>
+  <description>MRO pricing demo: product, customer, and competitor signals.</description>
+
+  <modules>
+    <module>libs/pricing-events</module>
+    <module>libs/pricing-core</module>
+    <module>libs/pricing-domain</module>
+    <module>services/pricing-api</module>
+    <module>services/price-engine</module>
+    <module>services/competitor-simulator</module>
+  </modules>
+
+  <properties>
+    <java.version>17</java.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.grainger.pricing</groupId>
+        <artifactId>pricing-events</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.grainger.pricing</groupId>
+        <artifactId>pricing-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.grainger.pricing</groupId>
+        <artifactId>pricing-domain</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

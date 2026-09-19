@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pricing-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pricing-api
+  template:
+    metadata:
+      labels:
+        app: pricing-api
+    spec:
+      containers:
+        - name: pricing-api
+          image: grainger/pricing-api:local
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: pricing-config
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pricing-secrets
+                  key: postgres-password
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pricing-api
+spec:
+  selector:
+    app: pricing-api
+  ports:
+    - port: 8080
+      targetPort: 8080

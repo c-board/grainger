@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pricing-config
+data:
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pricing
+  SPRING_DATASOURCE_USERNAME: pricing
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  API_URL: http://pricing-api:8080

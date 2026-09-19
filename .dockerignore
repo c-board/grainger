@@ -1,0 +1,6 @@
+**/target
+**/.git
+**/node_modules
+**/.next
+**/.DS_Store
+.github

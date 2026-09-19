@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: competitor-simulator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: competitor-simulator
+  template:
+    metadata:
+      labels:
+        app: competitor-simulator
+    spec:
+      containers:
+        - name: competitor-simulator
+          image: grainger/competitor-simulator:local
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: pricing-config
+          env:
+            - name: SERVER_PORT
+              value: "8082"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pricing-secrets
+                  key: postgres-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: competitor-simulator
+spec:
+  selector:
+    app: competitor-simulator
+  ports:
+    - port: 8082
+      targetPort: 8082
