@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { AppShell } from '@/components/AppShell';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { fetchJson } from '@/lib/api';
 import { formatMoney, formatPct } from '@/lib/format';
 import { Customer, PriceBreakdown, Product } from '@/lib/types';
@@ -57,80 +60,92 @@ const ExplorerPage = () => {
     >
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
         <label className="block text-sm">
-          <span className="mb-1 block text-steel">Product</span>
-          <select
-            className="w-full rounded border border-navy/20 bg-white px-3 py-2"
-            value={sku}
-            onChange={(event) => setSku(event.target.value)}
-          >
-            {products.map((product) => (
-              <option key={product.sku} value={product.sku}>
-                {product.sku} — {product.name}
-              </option>
-            ))}
-          </select>
+          <span className="mb-1 block text-muted-foreground">Product</span>
+          <Select value={sku} onValueChange={setSku}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a product" />
+            </SelectTrigger>
+            <SelectContent>
+              {products.map((product) => (
+                <SelectItem key={product.sku} value={product.sku}>
+                  {product.sku} — {product.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block text-steel">Customer</span>
-          <select
-            className="w-full rounded border border-navy/20 bg-white px-3 py-2"
-            value={customerId}
-            onChange={(event) => setCustomerId(event.target.value)}
-          >
-            {customers.map((customer) => (
-              <option key={customer.id} value={customer.id}>
-                {customer.name} ({customer.segment})
-              </option>
-            ))}
-          </select>
+          <span className="mb-1 block text-muted-foreground">Customer</span>
+          <Select value={customerId} onValueChange={setCustomerId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a customer" />
+            </SelectTrigger>
+            <SelectContent>
+              {customers.map((customer) => (
+                <SelectItem key={customer.id} value={customer.id}>
+                  {customer.name} ({customer.segment})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </label>
       </div>
 
-      {error ? <p className="mb-4 text-grainger">{error}</p> : null}
+      {error ? (
+        <Alert variant="destructive" className="mb-4">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : null}
 
       {breakdown ? (
         <div className="grid gap-6 lg:grid-cols-[2fr,1fr]">
           <ol className="space-y-3">
             {breakdown.steps.map((step, index) => (
-              <li key={step.name} className="rounded-lg border border-navy/10 bg-white p-4 shadow-sm">
-                <div className="flex items-baseline justify-between">
-                  <p className="text-xs uppercase tracking-wide text-steel">
-                    {index + 1}. {step.name}
-                  </p>
-                  <p className="text-lg font-semibold">{formatMoney(step.value)}</p>
-                </div>
-                <p className="mt-1 text-sm text-steel">{step.note}</p>
+              <li key={step.name}>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-baseline justify-between">
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        {index + 1}. {step.name}
+                      </p>
+                      <p className="text-lg font-semibold">{formatMoney(step.value)}</p>
+                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">{step.note}</p>
+                  </CardContent>
+                </Card>
               </li>
             ))}
           </ol>
-          <aside className="h-fit rounded-lg bg-navy p-5 text-white shadow-sm">
-            <p className="text-xs uppercase tracking-wide text-white/70">Customer price</p>
-            <p className="mt-2 text-3xl font-semibold">{formatMoney(breakdown.currentPrice)}</p>
-            <p className="mt-1 text-sm text-white/70">Source: {breakdown.currentSource}</p>
-            <dl className="mt-6 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <dt>Recommended</dt>
-                <dd>{formatMoney(breakdown.recommendedPrice)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt>Floor</dt>
-                <dd>{formatMoney(breakdown.floor)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt>Min margin</dt>
-                <dd>{formatPct(breakdown.minMargin)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt>Segment off list</dt>
-                <dd>{formatPct(breakdown.segmentDiscount)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt>Competitor match</dt>
-                <dd>{breakdown.matchedCompetitor ? 'Yes' : 'No'}</dd>
-              </div>
-            </dl>
-            <p className="mt-6 text-sm text-white/80">{breakdown.rationale}</p>
-          </aside>
+          <Card className="h-fit bg-sidebar text-sidebar-foreground">
+            <CardContent className="p-5">
+              <p className="text-xs uppercase tracking-wide text-sidebar-foreground/70">Customer price</p>
+              <p className="mt-2 text-3xl font-semibold">{formatMoney(breakdown.currentPrice)}</p>
+              <p className="mt-1 text-sm text-sidebar-foreground/70">Source: {breakdown.currentSource}</p>
+              <dl className="mt-6 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <dt>Recommended</dt>
+                  <dd>{formatMoney(breakdown.recommendedPrice)}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>Floor</dt>
+                  <dd>{formatMoney(breakdown.floor)}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>Min margin</dt>
+                  <dd>{formatPct(breakdown.minMargin)}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>Segment off list</dt>
+                  <dd>{formatPct(breakdown.segmentDiscount)}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>Competitor match</dt>
+                  <dd>{breakdown.matchedCompetitor ? 'Yes' : 'No'}</dd>
+                </div>
+              </dl>
+              <p className="mt-6 text-sm text-sidebar-foreground/80">{breakdown.rationale}</p>
+            </CardContent>
+          </Card>
         </div>
       ) : null}
     </AppShell>

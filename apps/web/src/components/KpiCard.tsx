@@ -1,3 +1,5 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
 type KpiCardProps = {
   label: string;
   value: string;
@@ -6,10 +8,14 @@ type KpiCardProps = {
 
 export const KpiCard = ({ label, value, hint }: KpiCardProps) => {
   return (
-    <div className="rounded-lg border border-navy/10 bg-white p-5 shadow-sm">
-      <p className="text-xs uppercase tracking-wide text-steel">{label}</p>
-      <p className="mt-2 text-3xl font-semibold text-navy">{value}</p>
-      <p className="mt-1 text-sm text-steel">{hint}</p>
-    </div>
+    <Card>
+      <CardHeader className="pb-2">
+        <CardDescription className="text-xs uppercase tracking-wide">{label}</CardDescription>
+        <CardTitle className="text-3xl font-semibold">{value}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">{hint}</p>
+      </CardContent>
+    </Card>
   );
 };

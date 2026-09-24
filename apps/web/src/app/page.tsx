@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { AppShell } from '@/components/AppShell';
 import { KpiCard } from '@/components/KpiCard';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { fetchJson } from '@/lib/api';
 import { formatMoney, formatTime } from '@/lib/format';
 import { Dashboard } from '@/lib/types';
@@ -43,7 +46,11 @@ const DashboardPage = () => {
       title="Pricing control center"
       subtitle="Watch competitor ticks, auto-applied list moves, and the approval queue for the MRO catalog."
     >
-      {error ? <p className="mb-4 text-grainger">{error}</p> : null}
+      {error ? (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : null}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Pending approvals" value={String(data?.pendingApprovals ?? '—')} hint="Deltas ≥ 5% wait for a pricing lead" />
         <KpiCard label="Auto-applied" value={String(data?.autoApplied ?? '—')} hint="Small moves applied by the engine" />
@@ -51,43 +58,43 @@ const DashboardPage = () => {
         <KpiCard label="Rejected" value={String(data?.rejected ?? '—')} hint="Held at the previous customer price" />
       </div>
 
-      <section className="mt-10 rounded-lg border border-navy/10 bg-white shadow-sm">
-        <div className="border-b border-navy/10 px-5 py-4">
-          <h2 className="text-lg font-semibold">Recent competitor moves</h2>
-          <p className="text-sm text-steel">Kafka topic competitor-prices, last 20 observations</p>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className="bg-navy/5 text-xs uppercase tracking-wide text-steel">
-              <tr>
-                <th className="px-5 py-3">When</th>
-                <th className="px-5 py-3">Competitor</th>
-                <th className="px-5 py-3">SKU</th>
-                <th className="px-5 py-3">Product</th>
-                <th className="px-5 py-3 text-right">Price</th>
-              </tr>
-            </thead>
-            <tbody>
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Recent competitor moves</CardTitle>
+          <CardDescription>Kafka topic competitor-prices, last 20 observations</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>When</TableHead>
+                <TableHead>Competitor</TableHead>
+                <TableHead>SKU</TableHead>
+                <TableHead>Product</TableHead>
+                <TableHead className="text-right">Price</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {(data?.recentCompetitorMoves ?? []).map((move) => (
-                <tr key={`${move.sku}-${move.observedAt}`} className="border-t border-navy/5">
-                  <td className="px-5 py-3 text-steel">{formatTime(move.observedAt)}</td>
-                  <td className="px-5 py-3">{move.competitor}</td>
-                  <td className="px-5 py-3 font-mono text-xs">{move.sku}</td>
-                  <td className="px-5 py-3">{move.productName}</td>
-                  <td className="px-5 py-3 text-right">{formatMoney(move.amount)}</td>
-                </tr>
+                <TableRow key={`${move.sku}-${move.observedAt}`}>
+                  <TableCell className="text-muted-foreground">{formatTime(move.observedAt)}</TableCell>
+                  <TableCell>{move.competitor}</TableCell>
+                  <TableCell className="font-mono text-xs">{move.sku}</TableCell>
+                  <TableCell>{move.productName}</TableCell>
+                  <TableCell className="text-right">{formatMoney(move.amount)}</TableCell>
+                </TableRow>
               ))}
               {data && data.recentCompetitorMoves.length === 0 ? (
-                <tr>
-                  <td className="px-5 py-8 text-center text-steel" colSpan={5}>
+                <TableRow>
+                  <TableCell className="py-8 text-center text-muted-foreground" colSpan={5}>
                     Waiting for the competitor simulator to publish the first tick.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : null}
-            </tbody>
-          </table>
-        </div>
-      </section>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </AppShell>
   );
 };

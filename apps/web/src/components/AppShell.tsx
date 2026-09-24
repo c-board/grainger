@@ -1,11 +1,29 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
+import { ClipboardCheck, LayoutDashboard, Package, Search } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
 
 const links = [
-  { href: '/', label: 'Dashboard' },
-  { href: '/products', label: 'Products' },
-  { href: '/explorer', label: 'Price explorer' },
-  { href: '/approvals', label: 'Approvals' },
+  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/products', label: 'Products', icon: Package },
+  { href: '/explorer', label: 'Price explorer', icon: Search },
+  { href: '/approvals', label: 'Approvals', icon: ClipboardCheck },
 ];
 
 type AppShellProps = {
@@ -15,30 +33,49 @@ type AppShellProps = {
 };
 
 export const AppShell = ({ title, subtitle, children }: AppShellProps) => {
+  const pathname = usePathname();
+
   return (
-    <div className="min-h-screen bg-paper text-navy">
-      <header className="bg-navy text-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <>
+      <Sidebar>
+        <SidebarHeader className="gap-1 px-4 py-4">
+          <p className="text-xs uppercase tracking-[0.2em] text-sidebar-foreground/70">Grainger Pricing</p>
+          <p className="font-semibold">Keep the World Working</p>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Navigate</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {links.map((link) => {
+                  const Icon = link.icon;
+                  return (
+                    <SidebarMenuItem key={link.href}>
+                      <SidebarMenuButton asChild isActive={pathname === link.href}>
+                        <Link href={link.href}>
+                          <Icon />
+                          <span>{link.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+      <SidebarInset>
+        <header className="flex items-center gap-2 border-b px-4 py-3">
+          <SidebarTrigger />
+          <Separator orientation="vertical" className="mr-2 h-4" />
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-white/70">Grainger Pricing</p>
-            <p className="font-semibold">Keep the World Working</p>
+            <h1 className="text-lg font-semibold">{title}</h1>
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
           </div>
-          <nav className="flex gap-6 text-sm">
-            {links.map((link) => (
-              <Link key={link.href} href={link.href} className="text-white/80 hover:text-white">
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-6 py-8">
-        <div className="mb-8 border-l-4 border-grainger pl-4">
-          <h1 className="text-3xl font-semibold">{title}</h1>
-          <p className="mt-1 text-steel">{subtitle}</p>
-        </div>
-        {children}
-      </main>
-    </div>
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-6">{children}</main>
+      </SidebarInset>
+    </>
   );
 };

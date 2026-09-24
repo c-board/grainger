@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -14,7 +15,9 @@ type RootLayoutProps = {
 const RootLayout = ({ children }: RootLayoutProps) => {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <SidebarProvider>{children}</SidebarProvider>
+      </body>
     </html>
   );
 };

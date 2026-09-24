@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { AppShell } from '@/components/AppShell';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { fetchJson, postJson } from '@/lib/api';
 import { formatMoney, formatPct } from '@/lib/format';
 import { Recommendation } from '@/lib/types';
@@ -45,48 +48,51 @@ const ApprovalsPage = () => {
       title="Price approvals"
       subtitle="Large competitor-driven swings stay queued until a pricing owner accepts or rejects them."
     >
-      {error ? <p className="mb-4 text-grainger">{error}</p> : null}
+      {error ? (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : null}
       <div className="space-y-4">
         {items.map((item) => (
-          <article key={item.id} className="rounded-lg border border-navy/10 bg-white p-5 shadow-sm">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <p className="font-mono text-xs text-steel">{item.sku}</p>
-                <h2 className="text-lg font-semibold">{item.productName}</h2>
-                <p className="text-sm text-steel">{item.customerName}</p>
+          <Card key={item.id}>
+            <CardContent className="p-5">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="font-mono text-xs text-muted-foreground">{item.sku}</p>
+                  <h2 className="text-lg font-semibold">{item.productName}</h2>
+                  <p className="text-sm text-muted-foreground">{item.customerName}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-muted-foreground">
+                    {formatMoney(item.currentPrice)} → {formatMoney(item.recommendedPrice)}
+                  </p>
+                  <p className="text-lg font-semibold">{formatPct(item.deltaPct)}</p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-steel">
-                  {formatMoney(item.currentPrice)} → {formatMoney(item.recommendedPrice)}
-                </p>
-                <p className="text-lg font-semibold">{formatPct(item.deltaPct)}</p>
+              <p className="mt-3 text-sm text-muted-foreground">{item.rationale}</p>
+              <div className="mt-4 flex gap-3">
+                <Button type="button" disabled={busyId === item.id} onClick={() => void decide(item.id, 'approve')}>
+                  Approve
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={busyId === item.id}
+                  onClick={() => void decide(item.id, 'reject')}
+                >
+                  Reject
+                </Button>
               </div>
-            </div>
-            <p className="mt-3 text-sm text-steel">{item.rationale}</p>
-            <div className="mt-4 flex gap-3">
-              <button
-                type="button"
-                disabled={busyId === item.id}
-                onClick={() => void decide(item.id, 'approve')}
-                className="rounded bg-grainger px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-              >
-                Approve
-              </button>
-              <button
-                type="button"
-                disabled={busyId === item.id}
-                onClick={() => void decide(item.id, 'reject')}
-                className="rounded border border-navy/20 px-4 py-2 text-sm font-medium disabled:opacity-50"
-              >
-                Reject
-              </button>
-            </div>
-          </article>
+            </CardContent>
+          </Card>
         ))}
         {items.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-navy/20 bg-white p-8 text-center text-steel">
-            No pending approvals. Small competitor moves auto-apply under the 5% threshold.
-          </p>
+          <Card className="border-dashed">
+            <CardContent className="p-8 text-center text-muted-foreground">
+              No pending approvals. Small competitor moves auto-apply under the 5% threshold.
+            </CardContent>
+          </Card>
         ) : null}
       </div>
     </AppShell>
