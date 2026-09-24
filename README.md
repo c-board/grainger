@@ -58,7 +58,7 @@ docker compose -f infra/docker-compose.yml up postgres kafka
 mvn -pl services/pricing-api -am spring-boot:run
 mvn -pl services/price-engine -am spring-boot:run
 mvn -pl services/competitor-simulator -am spring-boot:run
-cd apps/web && npm install && npm run dev
+cd apps/web && yarn install && yarn dev
 ```
 
 To iterate on the host against Compose Kafka, start only `kafka` (and optionally publish Postgres yourself). Java services in Compose talk to Postgres on the internal Docker network.
